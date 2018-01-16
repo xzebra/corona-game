@@ -11,6 +11,7 @@ function Player:new(playerObj)
 	player.speed = 200
 	player.jumping = false
 	player.dx = 1
+	player.hasAlreadyJumped = false
 
 	timer.performWithDelay(50, create_collision_box)
 

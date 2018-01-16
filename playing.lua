@@ -15,15 +15,19 @@ local Perspective = require "com.gymbylcoding.perspective"
 local Player = require("Player")
 local PlayerSave = require("PlayerSave")
 
-
 -- -----------------------------------------------------------------------------------
 -- Events
 -- -----------------------------------------------------------------------------------
 
 local function onTouch(event)
 
-	if event.phase == "began" then
-		if not player.jumping then
+	if event.phase == "ended" then
+		if math.abs(event.xStart - event.x) >= 40 then
+			player.dx = player.dx * -1
+			player.xScale = player.dx
+			local vx, vy = player:getLinearVelocity()
+			player:setLinearVelocity(player.speed*player.dx, vy)
+		elseif not player.jumping then
 			if player.collisions[2] or player.collisions[4] then
 				--inefficient way but there are some problems with bottom collision
 				local vx, vy = player:getLinearVelocity()
@@ -33,16 +37,16 @@ local function onTouch(event)
 				end
 			end
 			player:setLinearVelocity(player.speed*player.dx, -400)
-	 		player.jumping = true
-	 	elseif PlayerSave.jumpAbility then
-	 		if player.collisions[2] or player.collisions[4] then
-	 			player.dx = player.dx * -1
-				player.xScale = player.dx
-	 			player:setLinearVelocity(player.speed*player.dx, -400)
-	 		end
-	 	end
+		 	player.jumping = true
+		elseif PlayerSave.wallJump and (player.collisions[2] or player.collisions[4]) then
+		 	player.dx = player.dx * -1
+			player.xScale = player.dx
+		 	player:setLinearVelocity(player.speed*player.dx, -400)
+		elseif PlayerSave.doubleJump and not player.hasAlreadyJumped then
+		 	player:setLinearVelocity(player.speed*player.dx, -400)
+		 	player.hasAlreadyJumped = true
+		end
 	end
-
 end
 
 
@@ -55,6 +59,7 @@ local function onPlayerCollision(self, event)
 				self:setLinearVelocity(self.speed*self.dx, 0)
 			end
 			self.jumping = false
+			self.hasAlreadyJumped = false
 		end
 	elseif event.phase == "ended" then
 		if event.selfElement == 3 then --lands
@@ -103,7 +108,7 @@ function playing:create( event )
 
 	-- start physics before loading the map
 	physics.start()
-	physics.setDrawMode("hybrid") --hitboxes
+	--physics.setDrawMode("hybrid") --hitboxes
 
 	--Load an object based map from a JSON file
 	local mapData = json.decodeFile(
