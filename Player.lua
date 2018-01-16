@@ -9,6 +9,7 @@ function Player:new(playerObj)
 
 	player.x, player.y = playerObj.x, playerObj.y
 	player.speed = 200
+	player.jumpForce = -400
 	player.jumping = false
 	player.dx = 1
 	player.hasAlreadyJumped = false
@@ -19,7 +20,7 @@ function Player:new(playerObj)
 end
 
 function create_collision_box()
-	-- Collision settings (box2d) --
+	-- Collision settings (box2d)
 	local bodyUp = {
 		-player.width/2+1,-player.height/2, 
 		player.width/2-1,-player.height/2, 

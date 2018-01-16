@@ -23,27 +23,41 @@ local function onTouch(event)
 
 	if event.phase == "ended" then
 		if math.abs(event.xStart - event.x) >= 40 then
-			player.dx = player.dx * -1
-			player.xScale = player.dx
-			local vx, vy = player:getLinearVelocity()
-			player:setLinearVelocity(player.speed*player.dx, vy)
+			-- swipping finger on screen
+			if PlayerSave.swipeOnAir or PlayerSave.swipeAbility and not player.jumping then
+				-- depending on the direction of the finger
+				if event.xStart - event.x >= 40 then 
+					player.dx = -1
+				else
+					player.dx = 1
+				end
+				-- flip player horizontally
+				player.xScale = player.dx
+				-- save old velocities as they could be reseted when
+				-- applying linear velocity
+				local vx, vy = player:getLinearVelocity()
+				player:setLinearVelocity(player.speed*player.dx, vy)
+			end
 		elseif not player.jumping then
 			if player.collisions[2] or player.collisions[4] then
 				--inefficient way but there are some problems with bottom collision
 				local vx, vy = player:getLinearVelocity()
 				if vy == 0 then
+					-- basically checks if player 
+					-- is not jumping or falling 
 					player.dx = player.dx * -1
 					player.xScale = player.dx
 				end
 			end
-			player:setLinearVelocity(player.speed*player.dx, -400)
+			player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		 	player.jumping = true
 		elseif PlayerSave.wallJump and (player.collisions[2] or player.collisions[4]) then
+			-- check if colliding horizontally
 		 	player.dx = player.dx * -1
 			player.xScale = player.dx
-		 	player:setLinearVelocity(player.speed*player.dx, -400)
+		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		elseif PlayerSave.doubleJump and not player.hasAlreadyJumped then
-		 	player:setLinearVelocity(player.speed*player.dx, -400)
+		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		 	player.hasAlreadyJumped = true
 		end
 	end
@@ -53,17 +67,24 @@ end
 local function onPlayerCollision(self, event)
 
 	if event.phase == "began" then
+		-- not the best way to do it as im having some issues
+		-- when player goes from one tile to another and they
+		-- are too close
 		self.collisions[event.selfElement] = true
-		if self.jumping and event.selfElement == 3 then --lands
+		if self.jumping and event.selfElement == 3 then 
+			-- player lands
+
+			-- check if player actually has linear velocity variable
+			-- as when player is created may give some problems
 			if self.setLinearVelocity then
+				-- reset the walking
 				self:setLinearVelocity(self.speed*self.dx, 0)
 			end
+			--reset jumping and double jump
 			self.jumping = false
 			self.hasAlreadyJumped = false
 		end
 	elseif event.phase == "ended" then
-		if event.selfElement == 3 then --lands
-		end
 		self.collisions[event.selfElement] = false
 	end
 
@@ -71,7 +92,10 @@ end
 
 local function playerOnDoor(self, event)
 
+	-- gets property called map set in Tiled
 	PlayerSave.map = self.map
+
+	-- clears everything
 	Runtime:removeEventListener("touch", onTouch)
 	playing:clearLevel()
 
@@ -103,7 +127,7 @@ function playing:create( event )
 
 	local sceneGroup = self.view
 
-	--create camera
+	-- create camera
 	self.camera = Perspective.createView()
 
 	-- start physics before loading the map
@@ -117,22 +141,22 @@ function playing:create( event )
 			system.ResourceDirectory
 		)
 	)
-	self.map = tiled.new(mapData, "maps/") --maps/../assets/tileset/
+	self.map = tiled.new(mapData, "maps/") -- maps/../assets/tileset/
 
-	--get object in tiled map
-	--player must be invisible in tiledmap so the ponytiled library doesn't show it
+	-- get object in tiled map
+	-- player must be invisible in tiledmap so the ponytiled library doesn't show it
 	local playerObj = self.map:findObject("hero")
 	playerObj.isVisible = false
 
 	player = Player:new(playerObj)
 
-	--adds player and map to the camera
+	-- adds player and map to the camera
 	self.camera:add(player, 1)
 	self.camera:add(self.map, 2)
 	self.camera:prependLayer()
 
 	-- make player dragable for debug reasons
-	--local dragable = require "com.ponywolf.plugins.dragable"
+	-- local dragable = require "com.ponywolf.plugins.dragable"
 	-- player = dragable.new(player)
 
 	-- Event handling ----------

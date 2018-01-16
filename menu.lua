@@ -13,7 +13,8 @@ local function on_play()
 end
 
 local function on_exit()
-	if  system.getInfo("platformName")=="Android" then
+	-- Safe exit depending on the os
+	if system.getInfo("platformName") == "Android" then
 		native.requestExit()
 	else
 		os.exit()
