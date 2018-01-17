@@ -104,6 +104,17 @@ local function playerOnDoor(self, event)
 
 end
 
+local function playerOnWater(self, event)
+
+	if not PlayerSave.walkOnWater then
+		playing:clearLevel()
+
+		composer.removeScene("playing")
+		composer.gotoScene("restart")
+	end
+
+end
+
 -- -----------------------------------------------------------------------------------
 -- Local functions
 -- -----------------------------------------------------------------------------------
@@ -132,6 +143,7 @@ function playing:create( event )
 
 	-- start physics before loading the map
 	physics.start()
+	physics.setGravity(0,20)
 	--physics.setDrawMode("hybrid") --hitboxes
 
 	--Load an object based map from a JSON file
@@ -172,6 +184,12 @@ function playing:create( event )
 	for i, door in pairs(doors) do
 		door.collision = playerOnDoor
 		door:addEventListener("collision", door)
+	end
+
+	local water = self.map:listTypes("water")
+	for i, water in pairs(water) do
+		water.collision = playerOnWater
+		water:addEventListener("collision", water)
 	end
 
 end

@@ -1,5 +1,6 @@
 { "backgroundcolor":"#35495e",
  "height":31,
+ "infinite":false,
  "layers":[
         {
          "draworder":"topdown",
@@ -469,7 +470,7 @@
                      "friction":"string"
                     },
                  "rotation":0,
-                 "type":"",
+                 "type":"water",
                  "visible":true,
                  "width":256,
                  "x":768,
@@ -1704,7 +1705,7 @@
  "nextobjectid":385,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.0.3",
+ "tiledversion":"1.1.1",
  "tileheight":32,
  "tilesets":[
         {

@@ -5,7 +5,8 @@ local PlayerSave = {
 	wallJump = true, --jumping on walls
 	doubleJump = true,
 	swipeAbility = true, --change side by swiping the finger
-	swipeOnAir = true
+	swipeOnAir = true,
+	walkOnWater = true
 }
 
 return PlayerSave

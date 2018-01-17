@@ -8,15 +8,23 @@ function Player:new(playerObj)
 	)
 
 	player.x, player.y = playerObj.x, playerObj.y
-	player.speed = 200
-	player.jumpForce = -400
+	player.speed = 350
+	player.jumpForce = -500
 	player.jumping = false
 	player.dx = 1
 	player.hasAlreadyJumped = false
 
+	-- Animations
+	player.animation = "running"
+
 	timer.performWithDelay(50, create_collision_box)
 
 	return player
+end
+
+function Player:setAnimation(animationName)
+	player.animation = animationName
+	-- change sprite animation
 end
 
 function create_collision_box()
