@@ -31,16 +31,19 @@ function menu:create( event )
 	local sceneGroup = self.view
 	-- Code here runs when the scene is first created but has not yet appeared on screen
 
+	local bg = display.newImageRect(sceneGroup, "assets/menu_bg.jpg", display.actualContentWidth, display.actualContentHeight)
+	bg.x, bg.y = display.contentCenterX, display.contentCenterY
+
 	local title = display.newImageRect( sceneGroup, "assets/title.png", 408, 120 )
     title.x = display.contentCenterX
     title.y = display.contentHeight/4
      
     local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, display.contentHeight/2, native.systemFont, 60 )
-    playButton:setFillColor( 0.82, 0.86, 1 )
+    playButton:setFillColor( 0, 0, 0 )
     playButton:addEventListener("tap", on_play)
  
     local exitButton = display.newText( sceneGroup, "Exit", display.contentCenterX, 3*display.contentHeight/4, native.systemFont, 60 )
-    exitButton:setFillColor( 0.75, 0.78, 1 )
+    exitButton:setFillColor( 0, 0, 0 )
     exitButton:addEventListener("tap", on_exit)
 end
 
