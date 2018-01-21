@@ -2,7 +2,7 @@ local Player = {}
 
 function Player:new(playerObj)
 	player = display.newImageRect(
-		"assets/tileset/hero.png", 
+		"assets/testtileset/11.png", 
 		playerObj.width, 
 		playerObj.height
 	)
@@ -36,16 +36,16 @@ function create_collision_box()
 		-player.width/2+1, -player.height/2+2
 	}
 	local bodyLeft = { 
-		-player.width/2, -player.height/2+4,
-		-player.width/2 + 2, -player.height/2+4,
-		-player.width/2 + 2, player.height/2-4, 
-		-player.width/2, player.height/2-4
+		-player.width/2, -player.height/2+12,
+		-player.width/2 + 6, -player.height/2+12,
+		-player.width/2 + 6, player.height/2-12, 
+		-player.width/2, player.height/2-12
 	}
 	local bodyRight = {
-		player.width/2-2, -player.height/2+4,
-		player.width/2, -player.height/2+4,
-		player.width/2-2, player.height/2-4, 
-		player.width/2, player.height/2-4
+		player.width/2-6, -player.height/2+12,
+		player.width/2, -player.height/2+12,
+		player.width/2-6, player.height/2-12, 
+		player.width/2, player.height/2-12
 	}
 	local bodyDown = {
 		-player.width/2+1, player.height/2-2,
