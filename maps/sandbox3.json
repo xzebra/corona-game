@@ -2,6 +2,28 @@
  "layers":[
         {
          "draworder":"topdown",
+         "name":"bg",
+         "objects":[
+                {
+                 "gid":14,
+                 "height":928,
+                 "id":395,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":3164,
+                 "x":0,
+                 "y":932
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "name":"ground",
          "objects":[
                 {
@@ -129,8 +151,16 @@
                  "height":32,
                  "id":17,
                  "name":"",
+                 "properties":
+                    {
+                     "bodyType":"static"
+                    },
+                 "propertytypes":
+                    {
+                     "bodyType":"string"
+                    },
                  "rotation":0,
-                 "type":"",
+                 "type":"water",
                  "visible":true,
                  "width":32,
                  "x":1504,
@@ -177,8 +207,16 @@
                  "height":32,
                  "id":21,
                  "name":"",
+                 "properties":
+                    {
+                     "bodyType":"static"
+                    },
+                 "propertytypes":
+                    {
+                     "bodyType":"string"
+                    },
                  "rotation":0,
-                 "type":"",
+                 "type":"water",
                  "visible":true,
                  "width":32,
                  "x":1536,
@@ -189,8 +227,16 @@
                  "height":32,
                  "id":22,
                  "name":"",
+                 "properties":
+                    {
+                     "bodyType":"static"
+                    },
+                 "propertytypes":
+                    {
+                     "bodyType":"string"
+                    },
                  "rotation":0,
-                 "type":"",
+                 "type":"water",
                  "visible":true,
                  "width":32,
                  "x":1568,
@@ -4559,8 +4605,18 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "name":"bg",
+         "objects":[],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextobjectid":395,
+ "nextobjectid":396,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",
@@ -4650,6 +4706,31 @@
                 }
             },
          "tilewidth":64
+        }, 
+        {
+         "columns":0,
+         "firstgid":14,
+         "grid":
+            {
+             "height":1,
+             "orientation":"orthogonal",
+             "width":1
+            },
+         "margin":0,
+         "name":"bg",
+         "spacing":0,
+         "tilecount":1,
+         "tileheight":640,
+         "tiles":
+            {
+             "0":
+                {
+                 "image":"..\/assets\/testtileset\/BG2.jpg",
+                 "imageheight":640,
+                 "imagewidth":1024
+                }
+            },
+         "tilewidth":1024
         }],
  "tilewidth":32,
  "type":"map",

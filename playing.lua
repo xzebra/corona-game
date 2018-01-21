@@ -32,7 +32,7 @@ local function onTouch(event)
 					player.dx = 1
 				end
 				-- flip player horizontally
-				player.xScale = player.dx
+				player.xScale = player.pscale * player.dx
 				-- save old velocities as they could be reseted when
 				-- applying linear velocity
 				local vx, vy = player:getLinearVelocity()
@@ -46,15 +46,16 @@ local function onTouch(event)
 					-- basically checks if player 
 					-- is not jumping or falling 
 					player.dx = player.dx * -1
-					player.xScale = player.dx
+					player.xScale = player.pscale * player.dx
 				end
 			end
+			player:setAnimation("jump")
 			player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		 	player.jumping = true
 		elseif PlayerSave.wallJump and (player.collisions[2] or player.collisions[4]) then
 			-- check if colliding horizontally
 		 	player.dx = player.dx * -1
-			player.xScale = player.dx
+			player.xScale = player.pscale * player.dx
 		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		elseif PlayerSave.doubleJump and not player.hasAlreadyJumped then
 		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
@@ -63,6 +64,16 @@ local function onTouch(event)
 	end
 end
 
+
+local function onPlayerPreCollision(self, event)
+
+	if event.contact == nil then return end
+
+	if event.other.isWater and PlayerSave.walkOnWater then
+		event.contact.isEnabled = false
+	end
+
+end
 
 local function onPlayerCollision(self, event)
 
@@ -79,6 +90,8 @@ local function onPlayerCollision(self, event)
 			if self.setLinearVelocity then
 				-- reset the walking
 				self:setLinearVelocity(self.speed*self.dx, 0)
+				-- back to run animation
+				self:setAnimation("run")
 			end
 			--reset jumping and double jump
 			self.jumping = false
@@ -144,7 +157,7 @@ function playing:create( event )
 	-- start physics before loading the map
 	physics.start()
 	physics.setGravity(0,20)
-	--physics.setDrawMode("hybrid") --hitboxes
+	physics.setDrawMode("hybrid") --hitboxes
 
 	--Load an object based map from a JSON file
 	local mapData = json.decodeFile(
@@ -161,6 +174,7 @@ function playing:create( event )
 	playerObj.isVisible = false
 
 	player = Player:new(playerObj)
+	player:setAnimation("run")
 
 	-- adds player and map to the camera
 	self.camera:add(player, 1)
@@ -176,7 +190,9 @@ function playing:create( event )
 	self.camera:setFocus(player) -- Set the focus to the player
 	self.camera:track() -- Begin auto-tracking
 
+	player.preCollision = onPlayerPreCollision
 	player.collision = onPlayerCollision
+	player:addEventListener("preCollision", player)
 	player:addEventListener("collision", player)
 	Runtime:addEventListener("touch", onTouch)
 
@@ -189,6 +205,7 @@ function playing:create( event )
 	local water = self.map:listTypes("water")
 	for i, water in pairs(water) do
 		water.collision = playerOnWater
+		water.isWater = true
 		water:addEventListener("collision", water)
 	end
 
