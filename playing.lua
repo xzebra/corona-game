@@ -58,6 +58,7 @@ local function onTouch(event)
 			player.xScale = player.pscale * player.dx
 		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		elseif PlayerSave.doubleJump and not player.hasAlreadyJumped then
+			player:setAnimation("jump")
 		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
 		 	player.hasAlreadyJumped = true
 		end
@@ -128,6 +129,28 @@ local function playerOnWater(self, event)
 
 end
 
+local function playerOnObject(self, event)
+
+	--wallJump = true, --jumping on walls
+	--doubleJump = true,
+	--swipeAbility = true, --change side by swiping the finger
+	--swipeOnAir = true,
+	--walkOnWater = true
+
+	if self.object == "wallJump" then
+		PlayerSave.wallJump = true
+	elseif self.object == "doubleJump" then
+		PlayerSave.doubleJump = true
+	elseif self.object == "swipeAbility" then
+		PlayerSave.swipeAbility = true
+	elseif self.object == "swipeOnAir" then
+		PlayerSave.swipeOnAir = true
+	elseif self.object == "walkOnWater" then
+		PlayerSave.walkOnWater = true
+	end
+
+end
+
 -- -----------------------------------------------------------------------------------
 -- Local functions
 -- -----------------------------------------------------------------------------------
@@ -153,6 +176,11 @@ function playing:create( event )
 
 	-- create camera
 	self.camera = Perspective.createView()
+
+	--audio
+	local music = audio.loadStream("assets/music/bg1.mp3")
+	audio.setMaxVolume(0.25)
+	local backgroundMusicChannel = audio.play(music, { loops = -1 })
 
 	-- start physics before loading the map
 	physics.start()
@@ -202,11 +230,17 @@ function playing:create( event )
 		door:addEventListener("collision", door)
 	end
 
-	local water = self.map:listTypes("water")
-	for i, water in pairs(water) do
+	local watertiles = self.map:listTypes("water")
+	for i, water in pairs(watertiles) do
 		water.collision = playerOnWater
 		water.isWater = true
 		water:addEventListener("collision", water)
+	end
+
+	local abilityObjects = self.map:listTypes("Habilidad")
+	for i, abilityObject in pairs(abilityObjects) do
+		abilityObject.collision = playerOnObject
+		abilityObject:addEventListener("collision", abilityObject)
 	end
 
 end

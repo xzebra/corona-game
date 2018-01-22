@@ -25,8 +25,8 @@ function Player:new(playerObj)
 		{
 			name = "jump",
 			start = 14,
-			count = 23,
-			time = 800,
+			count = 9,
+			time = 400,
 			loopCount = 1,
 			loopDirection = "forward"
 		},
