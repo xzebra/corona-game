@@ -42,7 +42,7 @@ local function onTouch(event)
 			if player.collisions[2] or player.collisions[4] then
 				--inefficient way but there are some problems with bottom collision
 				local vx, vy = player:getLinearVelocity()
-				if vy == 0 then
+				if vy == 0 or player.collisions[3] then
 					-- basically checks if player 
 					-- is not jumping or falling 
 					player.dx = player.dx * -1
@@ -54,9 +54,13 @@ local function onTouch(event)
 		 	player.jumping = true
 		elseif PlayerSave.wallJump and (player.collisions[2] or player.collisions[4]) then
 			-- check if colliding horizontally
-		 	player.dx = player.dx * -1
+			if player.collisions[2] then
+		 		player.dx = -1
+		 	else
+		 		player.dx = 1
+		 	end
 			player.xScale = player.pscale * player.dx
-		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
+		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce-400)
 		elseif PlayerSave.doubleJump and not player.hasAlreadyJumped then
 			player:setAnimation("jump")
 		 	player:setLinearVelocity(player.speed*player.dx, player.jumpForce)
@@ -78,6 +82,7 @@ end
 
 local function onPlayerCollision(self, event)
 
+	if event.other.isObject then return nil end
 	if event.phase == "began" then
 		-- not the best way to do it as im having some issues
 		-- when player goes from one tile to another and they
@@ -129,6 +134,21 @@ local function playerOnWater(self, event)
 
 end
 
+local function playerOnSpike(self, event)
+
+	playing:clearLevel()
+	composer.removeScene("playing")
+	composer.gotoScene("restart")
+
+end
+
+local function playerTookObject(objectName)
+	local text = display.newText(objectName, display.contentCenterX, display.contentCenterY - 100, native.systemFontBold, 32)
+	text:setFillColor(0,0,0)
+
+	return text
+end
+
 local function playerOnObject(self, event)
 
 	--wallJump = true, --jumping on walls
@@ -137,17 +157,33 @@ local function playerOnObject(self, event)
 	--swipeOnAir = true,
 	--walkOnWater = true
 
+	local text
+
 	if self.object == "wallJump" then
+		text = playerTookObject("Wall Jump")
 		PlayerSave.wallJump = true
 	elseif self.object == "doubleJump" then
+		text = playerTookObject("Double Jump")
 		PlayerSave.doubleJump = true
 	elseif self.object == "swipeAbility" then
+		text = playerTookObject("Swipe!")
 		PlayerSave.swipeAbility = true
 	elseif self.object == "swipeOnAir" then
+		text = playerTookObject("Swipe on air!")
 		PlayerSave.swipeOnAir = true
 	elseif self.object == "walkOnWater" then
+		text = playerTookObject("Walk on water")
 		PlayerSave.walkOnWater = true
+	elseif self.object == "win" then
+		text = playerTookObject("You won")
+
+		composer.removeScene("playing")
+		timer.performWithDelay(1000, function() composer.gotoScene("menu") end)
 	end
+
+	timer.performWithDelay(1000, function() text:removeSelf() end)
+
+	self:removeSelf()
 
 end
 
@@ -156,12 +192,14 @@ end
 -- -----------------------------------------------------------------------------------
 
 local player
+local backgroundMusicChannel
 
 function playing:clearLevel()
 
 	self.map:removeSelf()
 	self.camera:destroy()
 	player:removeSelf()
+	audio.stop(backgroundMusicChannel)
 
 end
 
@@ -178,14 +216,19 @@ function playing:create( event )
 	self.camera = Perspective.createView()
 
 	--audio
-	local music = audio.loadStream("assets/music/bg1.mp3")
+	local music
+	if PlayerSave.map == "LVL9" then
+		music = audio.loadStream("assets/music/lvl9.mp3")
+	else
+		music = audio.loadStream("assets/music/bg1.mp3")
+	end
 	audio.setMaxVolume(0.25)
-	local backgroundMusicChannel = audio.play(music, { loops = -1 })
+	backgroundMusicChannel = audio.play(music, { loops = -1 })
 
 	-- start physics before loading the map
 	physics.start()
 	physics.setGravity(0,20)
-	physics.setDrawMode("hybrid") --hitboxes
+	--physics.setDrawMode("hybrid") --hitboxes
 
 	--Load an object based map from a JSON file
 	local mapData = json.decodeFile(
@@ -230,17 +273,24 @@ function playing:create( event )
 		door:addEventListener("collision", door)
 	end
 
-	local watertiles = self.map:listTypes("water")
-	for i, water in pairs(watertiles) do
+	local waterTiles = self.map:listTypes("water")
+	for i, water in pairs(waterTiles) do
 		water.collision = playerOnWater
 		water.isWater = true
 		water:addEventListener("collision", water)
 	end
 
-	local abilityObjects = self.map:listTypes("Habilidad")
-	for i, abilityObject in pairs(abilityObjects) do
-		abilityObject.collision = playerOnObject
-		abilityObject:addEventListener("collision", abilityObject)
+	local spikeTiles = self.map:listTypes("spike")
+	for i, spike in pairs(spikeTiles) do
+		spike.collision = playerOnSpike
+		spike:addEventListener("collision", spike)
+	end
+
+	local objects = self.map:listTypes("habilidad")
+	for i, object in pairs(objects) do
+		object.collision = playerOnObject
+		object.isObject = true
+		object:addEventListener("collision", object )
 	end
 
 end

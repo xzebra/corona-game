@@ -34,15 +34,15 @@ function menu:create( event )
 	local bg = display.newImageRect(sceneGroup, "assets/menu_bg.jpg", display.actualContentWidth, display.actualContentHeight)
 	bg.x, bg.y = display.contentCenterX, display.contentCenterY
 
-	local title = display.newImageRect( sceneGroup, "assets/title.png", 408, 120 )
+	local title = display.newImageRect( sceneGroup, "assets/title.png", 536, 297 )
     title.x = display.contentCenterX
-    title.y = display.contentHeight/4
+    title.y = display.contentHeight/2.5
      
-    local playButton = display.newText( sceneGroup, "Play", display.contentCenterX, display.contentHeight/2, native.systemFont, 60 )
+    local playButton = display.newText( sceneGroup, "PLAY", display.contentWidth/3, 3*display.contentHeight/4, native.systemFontBold, 60 )
     playButton:setFillColor( 0, 0, 0 )
     playButton:addEventListener("tap", on_play)
  
-    local exitButton = display.newText( sceneGroup, "Exit", display.contentCenterX, 3*display.contentHeight/4, native.systemFont, 60 )
+    local exitButton = display.newText( sceneGroup, "EXIT", 4*display.contentCenterX/3, 3*display.contentHeight/4, native.systemFontBold, 60 )
     exitButton:setFillColor( 0, 0, 0 )
     exitButton:addEventListener("tap", on_exit)
 end
